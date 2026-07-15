@@ -439,6 +439,7 @@ h2.mode-title{font-size:22px; margin:0 0 4px;}
   <section class="screen" id="screen-flash">
     <button class="back-btn" data-back>← もどる</button>
     <h2 class="mode-title">⚡ <ruby>単語<rt>たんご</rt></ruby>フラッシュ</h2>
+    <div class="seg" id="flash-diff-seg"></div>
     <p class="mode-sub">まんなかの ●を <ruby>見<rt>み</rt></ruby>たまま、ことばを ぱっと よみとろう！</p>
     <div class="stage" id="flash-stage">
       <div class="focus-dot">▼ ここを見る</div>
@@ -2079,6 +2080,11 @@ const MID_ANTONYM=[[["集合","しゅうごう"],["解散","かいさん"]],[["�
 /* --- 類義語ペア --- */
 const MID_SYNONYM=[[["永遠","えいえん"],["永久","えいきゅう"]],[["賛成","さんせい"],["同意","どうい"]],[["我慢","がまん"],["忍耐","にんたい"]],[["手段","しゅだん"],["方法","ほうほう"]],[["進歩","しんぽ"],["発展","はってん"]],[["準備","じゅんび"],["用意","ようい"]],[["欠点","けってん"],["短所","たんしょ"]],[["突然","とつぜん"],["不意","ふい"]],[["有名","ゆうめい"],["著名","ちょめい"]],[["改良","かいりょう"],["改善","かいぜん"]],[["関心","かんしん"],["興味","きょうみ"]],[["決心","けっしん"],["決意","けつい"]],[["目的","もくてき"],["目標","もくひょう"]],[["冷静","れいせい"],["沈着","ちんちゃく"]],[["未来","みらい"],["将来","しょうらい"]],[["使命","しめい"],["任務","にんむ"]],[["賢明","けんめい"],["利口","りこう"]],[["名誉","めいよ"],["栄誉","えいよ"]],[["傾向","けいこう"],["風潮","ふうちょう"]],[["応援","おうえん"],["声援","せいえん"]],[["案外","あんがい"],["意外","いがい"]],[["長所","ちょうしょ"],["美点","びてん"]],[["値段","ねだん"],["価格","かかく"]],[["不足","ふそく"],["欠乏","けつぼう"]]];
 
+/* --- やさしい：小3〜4年生くらいの生活語彙 --- */
+const MID_EASY=[["家族","かぞく"],["友達","ともだち"],["学校","がっこう"],["教室","きょうしつ"],["給食","きゅうしょく"],["宿題","しゅくだい"],["勉強","べんきょう"],["図書館","としょかん"],["公園","こうえん"],["病院","びょういん"],["駅前","えきまえ"],["商店街","しょうてんがい"],["動物園","どうぶつえん"],["水族館","すいぞくかん"],["遊園地","ゆうえんち"],["運動会","うんどうかい"],["遠足","えんそく"],["旅行","りょこう"],["写真","しゃしん"],["手紙","てがみ"],["新聞","しんぶん"],["番組","ばんぐみ"],["練習","れんしゅう"],["試合","しあい"],["選手","せんしゅ"],["優勝","ゆうしょう"],["応援","おうえん"],["音楽","おんがく"],["合唱","がっしょう"],["楽器","がっき"],["工作","こうさく"],["実験","じっけん"],["観察","かんさつ"],["天気","てんき"],["気温","きおん"],["季節","きせつ"],["台風","たいふう"],["地図","ちず"],["世界","せかい"],["外国","がいこく"],["言葉","ことば"],["意味","いみ"],["質問","しつもん"],["相談","そうだん"],["約束","やくそく"],["予定","よてい"],["昨日","きのう"],["今朝","けさ"],["夕方","ゆうがた"],["早朝","そうちょう"],["階段","かいだん"],["屋上","おくじょう"],["荷物","にもつ"],["買い物","かいもの"],["料理","りょうり"],["野菜","やさい"],["果物","くだもの"],["朝食","ちょうしょく"],["健康","けんこう"],["元気","げんき"],["安全","あんぜん"],["注意","ちゅうい"],["交通","こうつう"],["信号","しんごう"],["横断歩道","おうだんほどう"],["自転車","じてんしゃ"]];
+/* --- ふつう：小5〜6年生くらいの学習語彙 --- */
+const MID_STD=[["経験","けいけん"],["努力","どりょく"],["興味","きょうみ"],["感謝","かんしゃ"],["感動","かんどう"],["想像","そうぞう"],["判断","はんだん"],["責任","せきにん"],["準備","じゅんび"],["情報","じょうほう"],["技術","ぎじゅつ"],["資料","しりょう"],["発表","はっぴょう"],["意見","いけん"],["賛成","さんせい"],["反対","はんたい"],["討論","とうろん"],["目標","もくひょう"],["計画","けいかく"],["結果","けっか"],["原因","げんいん"],["理由","りゆう"],["方法","ほうほう"],["比較","ひかく"],["調査","ちょうさ"],["記録","きろく"],["平均","へいきん"],["割合","わりあい"],["面積","めんせき"],["体積","たいせき"],["速度","そくど"],["温度","おんど"],["環境","かんきょう"],["資源","しげん"],["貿易","ぼうえき"],["輸入","ゆにゅう"],["輸出","ゆしゅつ"],["農業","のうぎょう"],["漁業","ぎょぎょう"],["工業","こうぎょう"],["政治","せいじ"],["選挙","せんきょ"],["憲法","けんぽう"],["権利","けんり"],["義務","ぎむ"],["国際","こくさい"],["平和","へいわ"],["伝統","でんとう"],["文化","ぶんか"],["歴史","れきし"],["宇宙","うちゅう"],["地球","ちきゅう"],["酸素","さんそ"],["呼吸","こきゅう"],["消化","しょうか"],["心臓","しんぞう"],["血液","けつえき"],["筋肉","きんにく"],["神経","しんけい"]];
+
 /* 対義語・類義語ペアを「A ⇔ B」「A ≒ B」カードにし、関係を後で問えるよう情報も保持 */
 const FLASH_PAIR_INFO = new Map();
 const antoCards = MID_ANTONYM.map(([a,b])=>{ const card=`${R(a[0],a[1])} ⇔ ${R(b[0],b[1])}`; FLASH_PAIR_INFO.set(card,{type:"anto",a,b}); return card; });
@@ -2091,13 +2097,23 @@ low:[
  "そら","うみ","やま","かわ","はな","き","つき","ほし","たいよう","にじ","くも","かみなり","ゆき","あめ","かぜ","こおり",
  "でんしゃ","ひこうき","ふね","じてんしゃ","くるま","とけい","めがね","かさ","ぼうし","くつ","たいこ","ピアノ","はなび","ふうせん","しゃぼんだま","どんぐり","クレヨン","えんぴつ","ランドセル","えほん",
  "あかい はな","あおい そら","しろい ゆき","まるい つき","ながい かわ","おおきな くじら","ちいさな こねこ","つよい かぜ","あまい みかん","はやい でんしゃ"],
-mid:[].concat(
- P(MID_SCIENCE), P(MID_GEO), P(MID_HIST), P(MID_CIVIC), P(MID_VOCAB),
- P(MID_YOJI), P(MID_IDIOM), P(MID_PROVERB), antoCards, synoCards),
+mid:[].concat(P(MID_EASY), P(MID_STD)),  // フォールバック（通常は FLASH_MID_TIERS を使用）
 adult:[
  "試行錯誤","森羅万象","温故知新","一期一会","切磋琢磨","電光石火","無我夢中","創意工夫","臨機応変","唯一無二","初志貫徹","風光明媚","勧善懲悪","竜頭蛇尾","一石二鳥","因果応報","起死回生","大器晩成","五里霧中","疑心暗鬼","一朝一夕","千載一遇","空前絶後","才色兼備","質実剛健","明鏡止水","泰然自若","冷静沈着","縦横無尽","自画自賛","我田引水","針小棒大","付和雷同","優柔不断",
  "継続は力なり","百聞は一見にしかず","案ずるより産むが易し","時は金なり","急がば回れ","塵も積もれば山となる","石の上にも三年","良薬は口に苦し","猿も木から落ちる","二兎を追う者は一兎をも得ず",
  "<ruby>邂逅<rt>かいこう</rt></ruby>","<ruby>逡巡<rt>しゅんじゅん</rt></ruby>","<ruby>忖度<rt>そんたく</rt></ruby>","<ruby>相殺<rt>そうさい</rt></ruby>","<ruby>脆弱<rt>ぜいじゃく</rt></ruby>","<ruby>憂鬱<rt>ゆううつ</rt></ruby>","<ruby>曖昧<rt>あいまい</rt></ruby>","<ruby>顕著<rt>けんちょ</rt></ruby>","<ruby>払拭<rt>ふっしょく</rt></ruby>","<ruby>傲慢<rt>ごうまん</rt></ruby>","<ruby>謙虚<rt>けんきょ</rt></ruby>","<ruby>寛容<rt>かんよう</rt></ruby>","<ruby>洞察<rt>どうさつ</rt></ruby>","<ruby>示唆<rt>しさ</rt></ruby>","<ruby>葛藤<rt>かっとう</rt></ruby>","<ruby>郷愁<rt>きょうしゅう</rt></ruby>","<ruby>羅針盤<rt>らしんばん</rt></ruby>","<ruby>蜃気楼<rt>しんきろう</rt></ruby>","<ruby>走馬灯<rt>そうまとう</rt></ruby>","<ruby>集中力<rt>しゅうちゅうりょく</rt></ruby>"]};
+
+/* 中・高学年レベルは 3段階の難易度から選べる */
+const FLASH_MID_TIERS = {
+ e: P(MID_EASY),                                                  // やさしい：小3〜4
+ n: [].concat(P(MID_STD), P(MID_PROVERB), P(MID_IDIOM)),          // ふつう：小5〜6
+ h: [].concat(P(MID_SCIENCE), P(MID_GEO), P(MID_HIST), P(MID_CIVIC),
+              P(MID_VOCAB), P(MID_YOJI), antoCards, synoCards)    // むずかしい：小6〜中学・受験
+};
+const FLASH_DIFF_OPTS = [
+ ["e","🌱 やさしい（小3〜4）"],
+ ["n","🚀 ふつう（小5〜6）"],
+ ["h","🔥 むずかしい（小6〜中学）"]];
 
 /* ---------------- データ：レベル定義 ---------------- */
 const LEVELS = {
@@ -2146,6 +2162,7 @@ const DEFAULT_STATE = () => ({
  xp:0, streak:0, lastDay:"",
  bestCpm:0, history:[], badges:[], flags:{},
  flashMs:{low:700, mid:550, adult:450},
+ flashDiff:"e",
  chunkCpm:{low:250, mid:350, adult:450},
  chunkLines:1,
  paceCpm:{low:250, mid:400, adult:550},
@@ -2168,6 +2185,7 @@ S.eyePrefs = Object.assign({pattern:"read", speed:1, dur:60}, S.eyePrefs||{});
 if(!["read","box","horiz","vert","expand","diag","mix"].includes(S.eyePrefs.pattern)) S.eyePrefs.pattern="read";
 S.pacePrefs = Object.assign({pattern:"block"}, S.pacePrefs||{});
 if(![1,3,5].includes(S.chunkLines)) S.chunkLines=1;
+if(!["e","n","h"].includes(S.flashDiff)) S.flashDiff="e";
 S.totals.pace = S.totals.pace||0;
 function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
 
@@ -2177,6 +2195,121 @@ const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.f
 const pick = (a,n) => shuffle(a).slice(0,n);
 const todayStr = () => { const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
 const plainText = html => html.replace(/<rt>[\s\S]*?<\/rt>/g,"").replace(/<[^>]+>/g,"");
+
+/* ---------------- 自動ふりがな ----------------
+   文章データにルビが無い漢字にも、辞書ベースで表示時にルビを振る。
+   フラッシュ単語リストの [語,よみ] を辞書として再利用し、頻出語を補う。 */
+const AUTO_RUBY = {};
+for(const list of [MID_EASY, MID_STD, MID_SCIENCE, MID_GEO, MID_HIST, MID_CIVIC, MID_VOCAB])
+  for(const [w,y] of list) AUTO_RUBY[w] = y;
+for(const pr of MID_ANTONYM.concat(MID_SYNONYM)) for(const [w,y] of pr) AUTO_RUBY[w] = y;
+Object.assign(AUTO_RUBY, {
+ 自分:"じぶん",世界:"せかい",時間:"じかん",人間:"にんげん",意味:"いみ",言葉:"ことば",地球:"ちきゅう",
+ 問題:"もんだい",相手:"あいて",言語:"げんご",知識:"ちしき",研究:"けんきゅう",日本:"にほん",日本語:"にほんご",
+ 行為:"こうい",実際:"じっさい",場所:"ばしょ",行動:"こうどう",記憶:"きおく",能力:"のうりょく",太陽:"たいよう",
+ 仕組:"しく",効果:"こうか",必要:"ひつよう",存在:"そんざい",民主主義:"みんしゅしゅぎ",未来:"みらい",
+ 空気:"くうき",宇宙:"うちゅう",速読:"そくどく",重要:"じゅうよう",作業:"さぎょう",完全:"かんぜん",
+ 人類:"じんるい",状態:"じょうたい",間違:"まちが",合理的:"ごうりてき",一人:"ひとり",価値:"かち",
+ 変化:"へんか",発明:"はつめい",文化:"ぶんか",信念:"しんねん",一度:"いちど",決断:"けつだん",
+ 社会:"しゃかい",場合:"ばあい",現在:"げんざい",物語:"ものがたり",栄養:"えいよう",感情:"かんじょう",
+ 左利:"ひだりき",方向:"ほうこう",文章:"ぶんしょう",大切:"たいせつ",失敗:"しっぱい",過去:"かこ",
+ 企業:"きぎょう",部分:"ぶぶん",結晶:"けっしょう",場面:"ばめん",証拠:"しょうこ",確率:"かくりつ",
+ 法律:"ほうりつ",距離:"きょり",現代:"げんだい",最後:"さいご",道具:"どうぐ",瞬間:"しゅんかん",
+ 前者:"ぜんしゃ",後者:"こうしゃ",権力:"けんりょく",事実:"じじつ",信頼:"しんらい",本当:"ほんとう",
+ 最初:"さいしょ",認識:"にんしき",先延:"さきの",関係:"かんけい",仮説:"かせつ",予測:"よそく",
+ 戦争:"せんそう",地上:"ちじょう",何度:"なんど",読書:"どくしょ",訓練:"くんれん",文字:"もじ",
+ 理解:"りかい",集中:"しゅうちゅう",説明:"せつめい",習慣:"しゅうかん",大量:"たいりょう",自然:"しぜん",
+ 人生:"じんせい",今日:"きょう",毎日:"まいにち",毎朝:"まいあさ",午前:"ごぜん",午後:"ごご",
+ 世紀:"せいき",世代:"せだい",大人:"おとな",子供:"こども",先生:"せんせい",授業:"じゅぎょう",
+ 動物:"どうぶつ",人々:"ひとびと",自身:"じしん",自体:"じたい",一緒:"いっしょ",普通:"ふつう",
+ 特別:"とくべつ",簡単:"かんたん",複雑:"ふくざつ",便利:"べんり",不思議:"ふしぎ",面白:"おもしろ",
+ 見事:"みごと",大事:"だいじ",無理:"むり",得意:"とくい",苦手:"にがて",安心:"あんしん",心配:"しんぱい",
+ 想像:"そうぞう",経済:"けいざい",科学:"かがく",科学者:"かがくしゃ",数学:"すうがく",物理:"ぶつり",
+ 医者:"いしゃ",病気:"びょうき",撮影:"さつえい",探査機:"たんさき",着陸:"ちゃくりく",直径:"ちょっけい",
+ 中心:"ちゅうしん",周期:"しゅうき",半分:"はんぶん",全体:"ぜんたい",以上:"いじょう",以下:"いか",
+ 以外:"いがい",途中:"とちゅう",結局:"けっきょく",突然:"とつぜん",絶対:"ぜったい",目的:"もくてき",
+ 一つ:"ひとつ",二つ:"ふたつ",三つ:"みっつ",何倍:"なんばい",人物:"じんぶつ",天気:"てんき",
+ 発見:"はっけん",発達:"はったつ",発想:"はっそう",身近:"みぢか",材料:"ざいりょう",魅力:"みりょく",
+ 種類:"しゅるい",性質:"せいしつ",実現:"じつげん",工夫:"くふう",影響:"えいきょう",可能:"かのう",
+ 可能性:"かのうせい",不可能:"ふかのう",誕生:"たんじょう",挑戦:"ちょうせん",冒険:"ぼうけん",
+ 練習:"れんしゅう",勇気:"ゆうき",笑顔:"えがお",親友:"しんゆう",兄弟:"きょうだい",両親:"りょうしん",
+ 大好:"だいす",一番:"いちばん",全部:"ぜんぶ",最高:"さいこう",最強:"さいきょう",無数:"むすう"
+});
+/* 単独の一字（前後に漢字が無いときだけ振る） */
+const AUTO_RUBY_NOUN = {
+ 人:"ひと",中:"なか",水:"みず",手:"て",目:"め",脳:"のう",紙:"かみ",海:"うみ",川:"かわ",月:"つき",
+ 山:"やま",石:"いし",花:"はな",空:"そら",星:"ほし",雨:"あめ",雪:"ゆき",風:"かぜ",声:"こえ",音:"おと",
+ 色:"いろ",道:"みち",家:"いえ",車:"くるま",魚:"さかな",鳥:"とり",木:"き",森:"もり",夜:"よる",朝:"あさ",
+ 頭:"あたま",顔:"かお",足:"あし",心:"こころ",力:"ちから",光:"ひかり",私:"わたし",体:"からだ",
+ 間:"あいだ",前:"まえ",今:"いま",昔:"むかし",数:"かず",逆:"ぎゃく",島:"しま",湖:"みずうみ",
+ 血:"ち",骨:"ほね",塩:"しお",氷:"こおり",火:"ひ",土:"つち",本:"ほん",絵:"え",歌:"うた",話:"はなし",
+ 熱:"ねつ",青:"あお",赤:"あか",白:"しろ",黒:"くろ",犬:"いぬ",猫:"ねこ",虫:"むし",夢:"ゆめ",隣:"となり"
+};
+/* 動詞・形容詞：直後の送りがなで読みを決める [読み, 続きうる文字] */
+const AUTO_RUBY_VERB = {
+ 見:[["み","るらりれろてたえせつかなまよ"]], 読:[["よ","むみめもん"]], 書:[["か","くきけこかい"]],
+ 聞:[["き","くきけこかい"]], 行:[["おこな","わいえおう"],["い","くきけこっ"]],
+ 出:[["だ","しすさせそ"],["で","るれてなにたよ"]], 使:[["つか","うわいえおっ"]], 持:[["も","つちてとっ"]],
+ 知:[["し","るらりれろっ"]], 言:[["い","うわいえおっ"]], 入:[["い","れ"],["はい","るらりろっ"]],
+ 考:[["かんが","え"]], 思:[["おも","うわいえおっ"]], 動:[["うご","くきけかこい"]], 呼:[["よ","ぶびばべぼん"]],
+ 引:[["ひ","くきけかこい"]], 消:[["き","え"],["け","すしせそ"]], 受:[["う","けか"]], 笑:[["わら","うわいえおっ"]],
+ 残:[["のこ","るらりれろっさしすせそ"]], 立:[["た","つちてとっ"]], 流:[["なが","れらすしせそ"]],
+ 届:[["とど","くきけかこい"]], 伝:[["つた","えわうい"]], 続:[["つづ","くきけこかい"]], 取:[["と","るらりれろっ"]],
+ 作:[["つく","るらりれろっ"]], 変:[["か","わえ"]], 感:[["かん","じ"]], 選:[["えら","ぶびばべぼん"]],
+ 忘:[["わす","れ"]], 覚:[["おぼ","え"]], 走:[["はし","るらりれろっ"]], 買:[["か","うわいえおっ"]],
+ 待:[["ま","つちてとっ"]], 始:[["はじ","まめ"]], 終:[["お","わえ"]], 教:[["おし","え"]], 落:[["お","ちと"]],
+ 集:[["あつ","まめ"]], 決:[["き","まめ"]], 進:[["すす","むみめもん"]], 戻:[["もど","るらりれろっすし"]],
+ 返:[["かえ","るらりすしせそ"]], 向:[["む","くきけかこい"]], 与:[["あた","え"]], 守:[["まも","るらりれろっ"]],
+ 描:[["えが","くきけかこい"]], 積:[["つ","むみもめん"]], 溶:[["と","けか"]], 降:[["ふ","るらりれろっ"]],
+ 座:[["すわ","るらりれろっ"]], 減:[["へ","るらりろっ"]], 増:[["ふ","え"]], 迷:[["まよ","うわいえおっ"]],
+ 捨:[["す","て"]], 乗:[["の","るらりれろっせ"]], 歩:[["ある","くきけかこい"]], 食:[["た","べ"]],
+ 起:[["お","きこ"]], 切:[["き","るらりれろっ"]], 投:[["な","げ"]], 並:[["なら","ぶびべばぼん"]],
+ 失:[["うしな","うわいえおっ"]], 示:[["しめ","すしせそ"]], 信:[["しん","じ"]],
+ 通:[["とお","るらりれろっすしせそ"]], 当:[["あ","た"]], 答:[["こた","え"]], 話:[["はな","すしせそ"]],
+ 語:[["かた","るらりれろっ"]], 歌:[["うた","うわいえおっ"]], 学:[["まな","ぶびばべぼん"]],
+ 調:[["しら","べ"]], 得:[["え","るらたて"]], 死:[["し","ぬなにねのん"]], 遊:[["あそ","ぶびばべぼん"]],
+ 飛:[["と","ぶびばべぼん"]], 泳:[["およ","ぐぎげごが"]], 打:[["う","つちてとっ"]], 拾:[["ひろ","うわいえおっ"]],
+ 置:[["お","くきけかこい"]], 送:[["おく","るらりれろっ"]], 探:[["さが","すしせそ"]],
+ 生:[["い","き"],["う","ま"]], 合:[["あ","うわいえおっ"]], 違:[["ちが","うわいえおっ"]], 異:[["こと","な"]],
+ 驚:[["おどろ","くきけかこい"]], 数:[["かぞ","え"]],
+ 多:[["おお","くいかけ"]], 高:[["たか","いくけかさ"]], 長:[["なが","いくけかさ"]], 強:[["つよ","いくけかさま"]],
+ 弱:[["よわ","いくけかさま"]], 広:[["ひろ","いくけかさが"]], 深:[["ふか","いくけかさま"]],
+ 速:[["はや","いくけかさ"]], 遅:[["おそ","いくけかさ"]], 少:[["すく","な"],["すこ","し"]],
+ 小:[["ちい","さ"]], 大:[["おお","き"]], 新:[["あたら","し"]], 古:[["ふる","いくけかさ"]],
+ 暗:[["くら","いくけかさ"]], 明:[["あか","る"]], 重:[["おも","いくけかさた"]], 軽:[["かる","いくけかさ"]],
+ 近:[["ちか","いくけかさづ"]], 遠:[["とお","いくけかさ"]], 青:[["あお","いくけかさ"]], 赤:[["あか","いくけかさ"]],
+ 白:[["しろ","いくけかさ"]], 黒:[["くろ","いくけかさ"]], 悪:[["わる","いくけかさ"]], 安:[["やす","いくけかさ"]],
+ 低:[["ひく","いくけかさ"]], 美:[["うつく","し"]], 楽:[["たの","し"]], 難:[["むずか","し"]],
+ 正:[["ただ","し"]], 同:[["おな","じ"]], 短:[["みじか","いくけかさ"]], 熱:[["あつ","いくけかさ"]],
+ 冷:[["つめ","た"],["ひ","え"]], 甘:[["あま","いくけかさ"]], 苦:[["にが","いくけかさ"]], 丸:[["まる","いくけかさ"]]
+};
+const AUTO_RUBY_RE = (()=>{
+  const singles = [...new Set(Object.keys(AUTO_RUBY_VERB).concat(Object.keys(AUTO_RUBY_NOUN)))].join("");
+  const words = Object.keys(AUTO_RUBY).sort((a,b)=>b.length-a.length).join("|");
+  return new RegExp(`${words}|(?<![一-鿿々])[${singles}]`, "g");
+})();
+function autoRuby(html){
+  if(!html) return html;
+  return html.split(/(<ruby>[\s\S]*?<\/ruby>|<[^>]+>)/g).map(seg=>{
+    if(!seg || seg[0]==="<") return seg;
+    return seg.replace(AUTO_RUBY_RE, (m, offset, str)=>{
+      const next = str[offset+m.length] || "";
+      if(m.length===1 && !AUTO_RUBY[m]){
+        if(/[一-鿿々]/.test(next)) return m;                       // 直後が漢字なら振らない
+        const vs = AUTO_RUBY_VERB[m];
+        if(vs) for(const [y,cls] of vs) if(next && cls.includes(next)) return `<ruby>${m}<rt>${y}</rt></ruby>`;
+        const ny = AUTO_RUBY_NOUN[m];
+        return ny ? `<ruby>${m}<rt>${ny}</rt></ruby>` : m;
+      }
+      const y = AUTO_RUBY[m];
+      if(!y) return m;
+      // 送りがな付きキー（例:「一つ」）は末尾のかなをルビから外す
+      let k=m.length, r=y.length;
+      while(k>0 && /[ぁ-ゖ]/.test(m[k-1]) && r>0 && m[k-1]===y[r-1]){ k--; r--; }
+      return `<ruby>${m.slice(0,k)}<rt>${y.slice(0,r)}</rt></ruby>`+m.slice(k);
+    });
+  }).join("");
+}
 
 /* 同じ文章が続けて出ないように：プールの大半を使い切るまで再出題しない */
 function pickText(level){
@@ -2193,7 +2326,8 @@ function pickText(level){
   const keep = Math.max(1, Math.floor(pool.length*0.8)); // 8割は重複なし
   if(used.length>keep) used = used.slice(-keep);
   S.recent[level] = used; save();
-  return pool[idx];
+  const t = pool[idx];
+  return Object.assign({}, t, {html: autoRuby(t.html)});
 }
 /* ジャンル表示つきタイトル */
 const titleHtml = p => `${p.genre?`<span class="genre-chip">${p.genre}</span> `:""}${p.title}`;
@@ -2443,7 +2577,7 @@ function renderHome(){
 $("btn-progress").addEventListener("click", ()=>{ sfx("tap"); showScreen("screen-progress"); });
 
 function prepMode(id){
-  if(id==="flash"){ $("flash-stage").classList.remove("fs"); $("flash-stop").classList.remove("visible"); $("flash-display").className="stage-hint"; $("flash-display").innerHTML="じゅんびが できたら<br>スタート！"; $("flash-quiz").innerHTML=""; $("btn-flash-start").style.display="block"; $("flash-bar").style.width="0%"; updateFlashLabel(); }
+  if(id==="flash"){ $("flash-stage").classList.remove("fs"); $("flash-stop").classList.remove("visible"); $("flash-display").className="stage-hint"; $("flash-display").innerHTML="じゅんびが できたら<br>スタート！"; $("flash-quiz").innerHTML=""; $("btn-flash-start").style.display="block"; $("flash-bar").style.width="0%"; updateFlashLabel(); renderFlashDiff(); }
   if(id==="chunk"){ $("chunk-stage").classList.remove("fs"); $("chunk-stop").classList.remove("visible"); $("chunk-options").style.display="block"; $("chunk-display").className="stage-hint"; $("chunk-display").innerHTML="ぶんしょうが まとまりごとに<br>ながれて くるよ"; $("btn-chunk-start").style.display="block"; $("chunk-bar").style.width="0%"; renderChunkOptions(); updateChunkLabel(); }
   if(id==="pace"){ $("pace-pane").classList.remove("fs"); $("pace-stop").classList.remove("visible"); $("pace-options").style.display="block"; $("pace-pane").innerHTML=`<div class="stage-hint" style="color:var(--ink-soft); text-align:center; font-weight:800;">きいろい ハイライトが、きめた はやさで すすむよ。<br><ruby>目<rt>め</rt></ruby>だけで おいかけて、さいごに クイズに こたえよう！</div>`; $("pace-quiz").innerHTML=""; $("btn-pace-start").style.display="block"; renderPaceOptions(); updatePaceLabel(); }
   if(id==="schulte"){ buildSchulteGrid(true); $("schulte-timer").textContent="0.0"; $("btn-schulte-start").style.display="block"; }
@@ -2455,9 +2589,27 @@ function prepMode(id){
 /* =====================================================
    ⚡ 単語フラッシュ (RSVP)
 ===================================================== */
-const FLASH_COUNT = 15;
+const FLASH_COUNT = 6;
 let flashShown = [];
 function updateFlashLabel(){ $("flash-speed-label").textContent = (S.flashMs[S.level]/1000).toFixed(2).replace(/0$/,""); }
+/* レベルに応じた出題プール（mid は難易度セレクターで切り替え） */
+function flashPool(){
+  if(S.level==="mid") return FLASH_MID_TIERS[S.flashDiff] || FLASH_MID_TIERS.e;
+  return FLASH_WORDS[S.level];
+}
+function renderFlashDiff(){
+  const seg=$("flash-diff-seg");
+  seg.style.display = S.level==="mid" ? "flex" : "none";
+  seg.innerHTML="";
+  if(S.level!=="mid") return;
+  for(const [v,label] of FLASH_DIFF_OPTS){
+    const b=document.createElement("button");
+    b.textContent=label;
+    if(S.flashDiff===v) b.classList.add("on");
+    b.onclick=()=>{ sfx("tap"); S.flashDiff=v; save(); renderFlashDiff(); };
+    seg.appendChild(b);
+  }
+}
 $("flash-slower").addEventListener("click", ()=>{ S.flashMs[S.level]=Math.min(1500, S.flashMs[S.level]+50); save(); updateFlashLabel(); sfx("tap"); });
 $("flash-faster").addEventListener("click", ()=>{ S.flashMs[S.level]=Math.max(120, S.flashMs[S.level]-50); save(); updateFlashLabel(); sfx("tap"); });
 
@@ -2478,7 +2630,7 @@ $("btn-flash-start").addEventListener("click", ()=>{
   $("flash-stage").classList.add("fs");
   $("flash-stop").classList.add("visible");
   $("flash-stop").onclick = ()=>{ sfx("tap"); stopAllModes(); prepMode("flash"); };
-  const words = pick(FLASH_WORDS[S.level], FLASH_COUNT);
+  const words = pick(flashPool(), FLASH_COUNT);
   flashShown = words;
   const disp = $("flash-display");
   let step = 3;
@@ -2512,7 +2664,7 @@ $("btn-flash-start").addEventListener("click", ()=>{
 function flashRecallQuiz(){
   const box = $("flash-quiz");
   const qs = [];
-  const notShown = FLASH_WORDS[S.level].filter(w=>!flashShown.includes(w));
+  const notShown = flashPool().filter(w=>!flashShown.includes(w));
   for(let k=0;k<2;k++){
     const answer = flashShown[Math.floor(Math.random()*flashShown.length)];
     const wrongs = pick(notShown, 2);
@@ -3121,8 +3273,8 @@ function runQuiz(container, qs, onDone, bigChoices){
     const ansIdx = q.a==null?0:q.a;
     const answer = q.c[ansIdx];
     const choices = shuffle(q.c.slice());
-    container.innerHTML = `<div class="card"><div class="quiz-progress">クイズ ${idx+1} / ${qs.length}</div><div class="quiz-q">${q.q}</div>${
-      choices.map((c,i)=>`<button class="quiz-choice" data-i="${i}" style="${bigChoices?'font-size:24px;text-align:center;':''}">${c}</button>`).join("")
+    container.innerHTML = `<div class="card"><div class="quiz-progress">クイズ ${idx+1} / ${qs.length}</div><div class="quiz-q">${autoRuby(q.q)}</div>${
+      choices.map((c,i)=>`<button class="quiz-choice" data-i="${i}" style="${bigChoices?'font-size:24px;text-align:center;':''}">${autoRuby(c)}</button>`).join("")
     }</div>`;
     container.querySelectorAll(".quiz-choice").forEach(btn=>{
       btn.onclick = ()=>{
