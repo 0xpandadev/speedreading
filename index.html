@@ -308,6 +308,7 @@ h2.mode-title{font-size:22px; margin:0 0 4px;}
 .pace-chunk.past rt{color:var(--ink-soft);}
 .pace-chunk.on{background:#ffe08a; color:var(--ink);}
 .pace-chunk.on rt{color:var(--ink-soft);}
+.pace-chunk.gone{opacity:.05; transition:opacity .5s;}
 .pace-count{text-align:center; font-size:56px; font-weight:900; color:var(--primary-deep); padding:30px 0;}
 
 /* ---------- speed check ---------- */
@@ -440,6 +441,7 @@ h2.mode-title{font-size:22px; margin:0 0 4px;}
     <button class="back-btn" data-back>← もどる</button>
     <h2 class="mode-title">⚡ <ruby>単語<rt>たんご</rt></ruby>フラッシュ</h2>
     <div class="seg" id="flash-diff-seg"></div>
+    <div class="seg" id="flash-style-seg"></div>
     <p class="mode-sub">まんなかの ●を <ruby>見<rt>み</rt></ruby>たまま、ことばを ぱっと よみとろう！</p>
     <div class="stage" id="flash-stage">
       <div class="focus-dot">▼ ここを見る</div>
@@ -2162,7 +2164,7 @@ const DEFAULT_STATE = () => ({
  xp:0, streak:0, lastDay:"",
  bestCpm:0, history:[], badges:[], flags:{},
  flashMs:{low:700, mid:550, adult:450},
- flashDiff:"e",
+ flashDiff:"e", flashStyle:"center",
  chunkCpm:{low:250, mid:350, adult:450},
  chunkLines:1,
  paceCpm:{low:250, mid:400, adult:550},
@@ -2184,8 +2186,11 @@ S.eyePrefs = Object.assign({pattern:"read", speed:1, dur:60}, S.eyePrefs||{});
 /* 旧バージョンの古いパターンID（lr/ud/circle等）は新方式に無いので初期値へ戻す */
 if(!["read","box","horiz","vert","expand","diag","mix"].includes(S.eyePrefs.pattern)) S.eyePrefs.pattern="read";
 S.pacePrefs = Object.assign({pattern:"block"}, S.pacePrefs||{});
+/* 廃止したパターン（twostop等）は初期値へ戻す */
+if(!["block","chunk","line","vanish","page"].includes(S.pacePrefs.pattern)) S.pacePrefs.pattern="block";
 if(![1,3,5].includes(S.chunkLines)) S.chunkLines=1;
 if(!["e","n","h"].includes(S.flashDiff)) S.flashDiff="e";
+if(!["center","slide","rise"].includes(S.flashStyle)) S.flashStyle="center";
 S.totals.pace = S.totals.pace||0;
 function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
 
@@ -2577,7 +2582,7 @@ function renderHome(){
 $("btn-progress").addEventListener("click", ()=>{ sfx("tap"); showScreen("screen-progress"); });
 
 function prepMode(id){
-  if(id==="flash"){ $("flash-stage").classList.remove("fs"); $("flash-stop").classList.remove("visible"); $("flash-display").className="stage-hint"; $("flash-display").innerHTML="じゅんびが できたら<br>スタート！"; $("flash-quiz").innerHTML=""; $("btn-flash-start").style.display="block"; $("flash-bar").style.width="0%"; updateFlashLabel(); renderFlashDiff(); }
+  if(id==="flash"){ $("flash-stage").classList.remove("fs"); $("flash-stop").classList.remove("visible"); $("flash-display").className="stage-hint"; $("flash-display").innerHTML="じゅんびが できたら<br>スタート！"; $("flash-quiz").innerHTML=""; $("btn-flash-start").style.display="block"; $("flash-bar").style.width="0%"; updateFlashLabel(); renderFlashDiff(); renderFlashStyle(); }
   if(id==="chunk"){ $("chunk-stage").classList.remove("fs"); $("chunk-stop").classList.remove("visible"); $("chunk-options").style.display="block"; $("chunk-display").className="stage-hint"; $("chunk-display").innerHTML="ぶんしょうが まとまりごとに<br>ながれて くるよ"; $("btn-chunk-start").style.display="block"; $("chunk-bar").style.width="0%"; renderChunkOptions(); updateChunkLabel(); }
   if(id==="pace"){ $("pace-pane").classList.remove("fs"); $("pace-stop").classList.remove("visible"); $("pace-options").style.display="block"; $("pace-pane").innerHTML=`<div class="stage-hint" style="color:var(--ink-soft); text-align:center; font-weight:800;">きいろい ハイライトが、きめた はやさで すすむよ。<br><ruby>目<rt>め</rt></ruby>だけで おいかけて、さいごに クイズに こたえよう！</div>`; $("pace-quiz").innerHTML=""; $("btn-pace-start").style.display="block"; renderPaceOptions(); updatePaceLabel(); }
   if(id==="schulte"){ buildSchulteGrid(true); $("schulte-timer").textContent="0.0"; $("btn-schulte-start").style.display="block"; }
@@ -2608,6 +2613,39 @@ function renderFlashDiff(){
     if(S.flashDiff===v) b.classList.add("on");
     b.onclick=()=>{ sfx("tap"); S.flashDiff=v; save(); renderFlashDiff(); };
     seg.appendChild(b);
+  }
+}
+/* ことばの見せかた：まんなか固定／右から左へ流れる／下から上へのぼる */
+const FLASH_STYLE_OPTS = [
+ ["center","⚡ まんなか"],
+ ["slide","➡️ よこに ながれる"],
+ ["rise","⬆️ したから のぼる"]];
+function renderFlashStyle(){
+  const seg=$("flash-style-seg"); seg.innerHTML="";
+  for(const [v,label] of FLASH_STYLE_OPTS){
+    const b=document.createElement("button");
+    b.textContent=label;
+    if(S.flashStyle===v) b.classList.add("on");
+    b.onclick=()=>{ sfx("tap"); S.flashStyle=v; save(); renderFlashStyle(); };
+    seg.appendChild(b);
+  }
+}
+/* 流れるパターン用アニメーション（真ん中でいったん止まって読み取らせる） */
+function flashAnimate(el, ms){
+  if(S.flashStyle==="slide"){
+    el.animate([
+      {transform:"translateX(48vw)", opacity:.1},
+      {transform:"translateX(0)",    opacity:1, offset:.3},
+      {transform:"translateX(0)",    opacity:1, offset:.7},
+      {transform:"translateX(-48vw)",opacity:.1}
+    ], {duration:ms, easing:"linear"});
+  }else if(S.flashStyle==="rise"){
+    el.animate([
+      {transform:"translateY(36vh)", opacity:.1},
+      {transform:"translateY(0)",    opacity:1, offset:.3},
+      {transform:"translateY(0)",    opacity:1, offset:.7},
+      {transform:"translateY(-36vh)",opacity:.1}
+    ], {duration:ms, easing:"linear"});
   }
 }
 $("flash-slower").addEventListener("click", ()=>{ S.flashMs[S.level]=Math.min(1500, S.flashMs[S.level]+50); save(); updateFlashLabel(); sfx("tap"); });
@@ -2651,10 +2689,13 @@ $("btn-flash-start").addEventListener("click", ()=>{
         later(()=>flashRecallQuiz(), 700);
         return;
       }
-      disp.innerHTML = orpWord(words[i]);
+      disp.innerHTML = S.flashStyle==="center" ? orpWord(words[i]) : words[i];
+      /* 流れるパターンは移動時間ぶん長めに表示する */
+      const ms = S.flashMs[S.level] * (S.flashStyle==="center" ? 1 : 1.8);
+      flashAnimate(disp, ms);
       $("flash-bar").style.width = ((i+1)/words.length*100)+"%";
       i++;
-      later(showNext, S.flashMs[S.level]);
+      later(showNext, ms);
     };
     showNext();
   };
@@ -2799,7 +2840,7 @@ const PACE_PATTERNS = [
  {id:"block",  name:"🧊 ブロック",       desc:"数行を まとめて パッと光らせる。1文字ずつ 追わず、かたまりで 感じとる — 速読の 本質練習"},
  {id:"chunk",  name:"🖍️ まとまり",       desc:"意味の まとまりごとに 光が進む。チャンク読みの 基本練習"},
  {id:"line",   name:"📏 1行なぞり",      desc:"1行ずつ 光る。指で なぞる 読み方と同じ、もどり読みを 防ぐ練習"},
- {id:"twostop",name:"🎯 2ストップ",      desc:"1行を 左右2回の 視点だけで 読む。視点の 回数を 減らす 上級練習"},
+ {id:"vanish", name:"🫥 きえていく",     desc:"よんだ 行から 文が きえていく。もどり読みを 封じて、前へ 前へ すすむ練習"},
  {id:"page",   name:"📸 ページフラッシュ",desc:"1ページを 丸ごと 数秒だけ 表示。フォトリーディングの 練習"}];
 
 function renderPaceOptions(){
@@ -2871,26 +2912,23 @@ $("btn-pace-start").addEventListener("click", ()=>{
         steps=[];
         for(let k=0;k<lines.length;k+=per){ steps.push([].concat(...lines.slice(k,k+per))); }
       }
-      else{ /* twostop: 各行を前半・後半に分ける */
+      else{ /* vanish: 1〜3行ずつ、読みおわった行が消えていく */
+        const per = S.level==="low"?1 : S.level==="mid"?2 : 3;
         steps=[];
-        for(const line of lines){
-          if(line.length<2){ steps.push(line); continue; }
-          const half=Math.ceil(line.length/2);
-          steps.push(line.slice(0,half), line.slice(half));
-        }
+        for(let k=0;k<lines.length;k+=per){ steps.push([].concat(...lines.slice(k,k+per))); }
       }
     }
-    const isBlock = pattern==="block";
+    const isBlock = pattern==="block", isVanish = pattern==="vanish";
     let i=0, prev=null;
     const advance = ()=>{
-      if(prev){ prev.forEach(s=>{ s.classList.remove("on"); s.classList.add("past"); }); }
+      if(prev){ prev.forEach(s=>{ s.classList.remove("on"); s.classList.add(isVanish?"gone":"past"); }); }
       if(i>=steps.length){ endRun(); return; }
       const cur=steps[i];
-      cur.forEach(s=>s.classList.add("on"));
+      if(!isVanish) cur.forEach(s=>s.classList.add("on"));
       cur[Math.floor(cur.length/2)].scrollIntoView({behavior:"smooth", block:"center"});
       const len = cur.reduce((a,s)=>a+chunkChars(s.innerHTML),0);
       /* ブロックは「読む」のではなく「一目で捉える」ので、少し長めの停留＋下限を上げる */
-      const ms = isBlock
+      const ms = (isBlock||isVanish)
         ? Math.max(520, len / S.paceCpm[S.level] * 60000)
         : Math.max(160, len / S.paceCpm[S.level] * 60000);
       prev=cur; i++;
