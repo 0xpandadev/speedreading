@@ -317,6 +317,11 @@ h2.mode-title{font-size:22px; margin:0 0 4px;}
 #anzan-answer .anzan-input{width:100%; font-size:32px; font-weight:800; text-align:center; padding:14px; border:3px solid #e3e7f5; border-radius:16px; outline:none; font-family:inherit;}
 #anzan-answer .anzan-input:focus{border-color:var(--primary);}
 #anzan-answer .btn-row{margin-top:12px;}
+.numline-wrap{padding:0 4px; user-select:none;}
+#numline-svg{display:block;}
+.nl-result-good{color:var(--green); font-weight:800;}
+.nl-result-ok{color:var(--gold); font-weight:800;}
+.nl-result-miss{color:var(--pink); font-weight:800;}
 .pace-count{text-align:center; font-size:56px; font-weight:900; color:var(--primary-deep); padding:30px 0;}
 
 /* ---------- speed check ---------- */
@@ -620,6 +625,34 @@ h2.mode-title{font-size:22px; margin:0 0 4px;}
     </div>
     <div id="anzan-answer" style="display:none;"></div>
     <button class="big-btn" id="btn-anzan-start">スタート！</button>
+  </section>
+
+  <!-- ============ NUMBER LINE（中・高学年専用） ============ -->
+  <section class="screen" id="screen-numline">
+    <button class="back-btn" data-back>← もどる</button>
+    <h2 class="mode-title">📏 <ruby>数直線<rt>すうちょくせん</rt></ruby>チャレンジ</h2>
+    <div class="seg" id="numline-rank-seg"></div>
+    <p class="small" id="numline-rank-desc" style="margin:0 0 10px;"></p>
+    <p class="mode-sub"><ruby>数<rt>かず</rt></ruby>の <ruby>位置<rt>いち</rt></ruby>を タップ！ <ruby>数<rt>すう</rt></ruby>の <ruby>感覚<rt>かんかく</rt></ruby>を きたえよう</p>
+    <div class="card" id="numline-area">
+      <div class="center" style="font-size:16px; font-weight:800; margin-bottom:10px;" id="numline-progress"></div>
+      <div class="center" style="font-size:42px; font-weight:900; color:var(--primary-deep); margin-bottom:18px;" id="numline-target"></div>
+      <div class="numline-wrap" id="numline-wrap">
+        <svg id="numline-svg" viewBox="0 0 560 80" style="width:100%; touch-action:none;">
+          <line x1="30" y1="40" x2="530" y2="40" stroke="#c8cfe6" stroke-width="4" stroke-linecap="round"/>
+          <line x1="30" y1="25" x2="30" y2="55" stroke="var(--ink)" stroke-width="3"/>
+          <line x1="530" y1="25" x2="530" y2="55" stroke="var(--ink)" stroke-width="3"/>
+          <text x="30" y="72" text-anchor="middle" font-size="14" font-weight="800" fill="var(--ink)" id="nl-label-min">0</text>
+          <text x="530" y="72" text-anchor="middle" font-size="14" font-weight="800" fill="var(--ink)" id="nl-label-max">100</text>
+          <circle id="nl-marker" cx="-50" cy="40" r="10" fill="var(--primary)" stroke="#fff" stroke-width="3" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,.2)); cursor:pointer;"/>
+          <circle id="nl-answer-marker" cx="-50" cy="40" r="6" fill="var(--green)" stroke="#fff" stroke-width="2" style="display:none;"/>
+          <line id="nl-answer-line" x1="-50" y1="28" x2="-50" y2="52" stroke="var(--green)" stroke-width="2" stroke-dasharray="4" style="display:none;"/>
+        </svg>
+      </div>
+      <div class="center small" id="numline-feedback" style="margin-top:10px; min-height:24px;"></div>
+    </div>
+    <button class="big-btn" id="btn-numline-start">スタート！（10もん）</button>
+    <button class="big-btn green" id="btn-numline-next" style="display:none;">つぎの もんだい →</button>
   </section>
 
   <!-- ============ PROGRESS ============ -->
@@ -2213,7 +2246,7 @@ const DEFAULT_STATE = () => ({
  bestCpm:0, history:[], badges:[], flags:{},
  flashMs:{low:700, mid:550, adult:450},
  flashDiff:"e", flashStyle:"center",
- calcMs:1200, calcRank:0, anzanMs:1000, anzanRank:0, anzanBest:[0,0,0,0,0],
+ calcMs:1200, calcRank:0, anzanMs:1000, anzanRank:0, anzanBest:[0,0,0,0,0], numlineRank:0, numlineBest:[100,100,100],
  chunkCpm:{low:250, mid:350, adult:450},
  chunkLines:1,
  paceCpm:{low:250, mid:400, adult:550},
@@ -2243,7 +2276,9 @@ if(!["center","slide","rise"].includes(S.flashStyle)) S.flashStyle="center";
 S.calcMs = S.calcMs||1200; S.calcRank = S.calcRank||0;
 S.anzanMs = S.anzanMs||1000; S.anzanRank = S.anzanRank||0;
 S.anzanBest = Array.isArray(S.anzanBest)? S.anzanBest : [0,0,0,0,0];
-S.totals.calc = S.totals.calc||0; S.totals.anzan = S.totals.anzan||0;
+S.numlineRank = S.numlineRank||0;
+S.numlineBest = Array.isArray(S.numlineBest)? S.numlineBest : [100,100,100];
+S.totals.calc = S.totals.calc||0; S.totals.anzan = S.totals.anzan||0; S.totals.numline = S.totals.numline||0;
 S.totals.pace = S.totals.pace||0;
 function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
 
@@ -2607,7 +2642,8 @@ const MODES = [
  {id:"eye",    screen:"screen-eye",    emoji:"👀", tape:"#2ec98e", name:"<ruby>目<rt>め</rt></ruby>のたいそう", desc:"じゅんび うんどう"},
  {id:"check",  screen:"screen-check",  emoji:"🏁", tape:"#ff8c42", name:"<ruby>速読<rt>そくどく</rt></ruby>チェック", desc:"はやさを はかる"},
  {id:"calc",   screen:"screen-calc",   emoji:"🧮", tape:"#ffd23f", name:"<ruby>計算<rt>けいさん</rt></ruby>フラッシュ", desc:"けいさんを ぱっと おぼえる", midOnly:true},
- {id:"anzan",screen:"screen-anzan",emoji:"🧠", tape:"#f95d6a", name:"フラッシュ<ruby>暗算<rt>あんざん</rt></ruby>", desc:"<ruby>数字<rt>すうじ</rt></ruby>を <ruby>足<rt>た</rt></ruby>して <ruby>暗算力<rt>あんざんりょく</rt></ruby> アップ！", midOnly:true}];
+ {id:"anzan",screen:"screen-anzan",emoji:"🧠", tape:"#f95d6a", name:"フラッシュ<ruby>暗算<rt>あんざん</rt></ruby>", desc:"<ruby>数字<rt>すうじ</rt></ruby>を <ruby>足<rt>た</rt></ruby>して <ruby>暗算力<rt>あんざんりょく</rt></ruby> アップ！", midOnly:true},
+ {id:"numline",screen:"screen-numline",emoji:"📏", tape:"#2ec98e", name:"<ruby>数直線<rt>すうちょくせん</rt></ruby>チャレンジ", desc:"<ruby>数<rt>かず</rt></ruby>の <ruby>感覚<rt>かんかく</rt></ruby>を きたえる", midOnly:true}];
 
 function renderHome(){
   ensureDaily();
@@ -2647,6 +2683,7 @@ function prepMode(id){
   if(id==="check"){ resetCheck(); }
   if(id==="calc"){ $("calc-stage").classList.remove("fs"); $("calc-stop").classList.remove("visible"); $("calc-display").className="stage-hint"; $("calc-display").innerHTML="じゅんびが できたら<br>スタート！"; $("calc-quiz").innerHTML=""; $("btn-calc-start").style.display="block"; $("calc-bar").style.width="0%"; updateCalcLabel(); renderCalcRank(); }
   if(id==="anzan"){ $("anzan-display").className="stage-hint"; $("anzan-display").innerHTML="スタートを おすと<br><ruby>数字<rt>すうじ</rt></ruby>が つぎつぎ 出るよ！"; $("anzan-answer").style.display="none"; $("anzan-answer").innerHTML=""; $("btn-anzan-start").style.display="block"; updateAnzanLabel(); renderAnzanRank(); }
+  if(id==="numline"){ $("numline-target").textContent=""; $("numline-progress").textContent=""; $("numline-feedback").innerHTML=""; $("btn-numline-start").style.display="block"; $("btn-numline-next").style.display="none"; resetNLMarkers(); renderNumlineRank(); }
 }
 
 /* =====================================================
@@ -3010,6 +3047,117 @@ function showAnzanAnswer(answer){
   }
   box.appendChild(row);
 }
+
+/* =====================================================
+   📏 数直線チャレンジ（Number Line Estimation — Siegler & Opfer 2003）
+===================================================== */
+const NUMLINE_RANKS = [
+ {name:"🌟 0〜100", desc:"まずは 100まで！ 数の 位置を つかもう", min:0, max:100, decimals:false},
+ {name:"🚀 0〜1000", desc:"1000まで ひろがる！ 大きい数の 感覚を きたえよう", min:0, max:1000, decimals:false},
+ {name:"🔥 0〜1（小数）", desc:"0.01きざみ。小数の 感覚が ためされる！", min:0, max:1, decimals:true}];
+const NL_QUESTIONS = 10;
+const NL_X0 = 30, NL_X1 = 530;
+
+function nlTargetFor(rank){
+  const r = NUMLINE_RANKS[rank];
+  if(r.decimals) return Math.round(Math.random()*100)/100;
+  return ri(Math.ceil(r.max*0.05), Math.floor(r.max*0.95));
+}
+function nlPosToVal(x, rank){
+  const r = NUMLINE_RANKS[rank];
+  const ratio = Math.max(0, Math.min(1, (x - NL_X0)/(NL_X1 - NL_X0)));
+  return r.min + ratio * (r.max - r.min);
+}
+function nlValToX(val, rank){
+  const r = NUMLINE_RANKS[rank];
+  return NL_X0 + (val - r.min)/(r.max - r.min) * (NL_X1 - NL_X0);
+}
+function nlFormat(val, rank){
+  return NUMLINE_RANKS[rank].decimals ? val.toFixed(2) : String(Math.round(val));
+}
+function resetNLMarkers(){
+  $("nl-marker").setAttribute("cx", -50);
+  $("nl-answer-marker").style.display="none";
+  $("nl-answer-line").style.display="none";
+}
+function renderNumlineRank(){
+  const seg=$("numline-rank-seg"); seg.innerHTML="";
+  NUMLINE_RANKS.forEach((r,i)=>{
+    const b=document.createElement("button");
+    b.textContent=r.name;
+    if(S.numlineRank===i) b.classList.add("on");
+    b.onclick=()=>{ sfx("tap"); S.numlineRank=i; save(); renderNumlineRank(); };
+    seg.appendChild(b);
+  });
+  const r = NUMLINE_RANKS[S.numlineRank];
+  $("nl-label-min").textContent = r.decimals ? "0" : String(r.min);
+  $("nl-label-max").textContent = r.decimals ? "1" : String(r.max);
+  const best = S.numlineBest[S.numlineRank];
+  $("numline-rank-desc").textContent = "💡 " + r.desc + (best<100 ? `　👑 ベスト ズレ：${best.toFixed(1)}%`:"");
+}
+
+$("btn-numline-start").addEventListener("click", ()=>{
+  sfx("tap");
+  $("btn-numline-start").style.display="none";
+  let qIdx=0, errors=[];
+  const askQ = ()=>{
+    resetNLMarkers();
+    $("btn-numline-next").style.display="none";
+    $("numline-feedback").innerHTML="";
+    const target = nlTargetFor(S.numlineRank);
+    $("numline-target").textContent = nlFormat(target, S.numlineRank);
+    $("numline-progress").textContent = `${qIdx+1} / ${NL_QUESTIONS}`;
+    let answered = false;
+
+    const handleTap = (e)=>{
+      if(answered) return;
+      answered = true;
+      const svg = $("numline-svg");
+      const rect = svg.getBoundingClientRect();
+      const svgW = 560;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const px = (clientX - rect.left) / rect.width * svgW;
+      const cx = Math.max(NL_X0, Math.min(NL_X1, px));
+      const guessVal = nlPosToVal(cx, S.numlineRank);
+      const r = NUMLINE_RANKS[S.numlineRank];
+      const pae = Math.abs(guessVal - target) / (r.max - r.min) * 100;
+      errors.push(pae);
+
+      $("nl-marker").setAttribute("cx", cx);
+      const correctX = nlValToX(target, S.numlineRank);
+      $("nl-answer-marker").setAttribute("cx", correctX);
+      $("nl-answer-marker").style.display="";
+      $("nl-answer-line").setAttribute("x1", correctX);
+      $("nl-answer-line").setAttribute("x2", correctX);
+      $("nl-answer-line").style.display="";
+
+      const cls = pae<=3 ? "nl-result-good" : pae<=10 ? "nl-result-ok" : "nl-result-miss";
+      const emoji = pae<=3 ? "🎯" : pae<=10 ? "👍" : "😅";
+      $("numline-feedback").innerHTML = `<span class="${cls}">${emoji} ズレ ${pae.toFixed(1)}%　こたえ：${nlFormat(target, S.numlineRank)}</span>`;
+      sfx(pae<=10 ? "correct" : "wrong");
+
+      svg.removeEventListener("pointerdown", handleTap);
+      qIdx++;
+      if(qIdx < NL_QUESTIONS){
+        $("btn-numline-next").style.display="block";
+        $("btn-numline-next").onclick = ()=>{ sfx("tap"); askQ(); };
+      } else {
+        const avg = errors.reduce((s,e)=>s+e,0)/errors.length;
+        const best = S.numlineBest[S.numlineRank];
+        const isBest = avg < best;
+        if(isBest) S.numlineBest[S.numlineRank] = Math.round(avg*10)/10;
+        const stars = avg<=5?3 : avg<=10?2 : avg<=20?1 : 0;
+        const xp = 20 + (3-Math.min(3,Math.floor(avg/10)))*10;
+        finishSession("numline"); addXp(xp); save();
+        later(()=>showResult("📏 数直線チャレンジ おわり！", "⭐".repeat(stars)+"☆".repeat(3-stars),
+          `へいきん ズレ <span class="kpi">${avg.toFixed(1)}%</span><br>${isBest?"👑 じこベスト こうしん！":`ベスト：${Math.min(best,avg).toFixed(1)}%`}<br><span class="small">ズレが ちいさいほど すごい！</span>`,
+          xp, "", ()=>prepMode("numline")), 800);
+      }
+    };
+    $("numline-svg").addEventListener("pointerdown", handleTap);
+  };
+  askQ();
+});
 
 /* =====================================================
    📖 文章フラッシュ（チャンク読み）
